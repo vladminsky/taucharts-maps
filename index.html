@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.2/underscore-min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.11/d3.js"></script>
+</head>
+<body>
+
+<span id="target"></span>
+
+<script>
+    d3.json('https://gist.githubusercontent.com/d3noob/5189184/raw/598d1ebe0c251cd506c8395c60ab1d08520922a7/world-110m2.json',
+            function (e, m) {
+
+                d3.json('https://raw.githubusercontent.com/mledoze/countries/master/countries.json', function(e, c) {
+
+                    var byCodes = c.reduce(
+                            function(memo, item) {
+                                memo[item.ccn3] = item;
+                                return memo;
+                            },
+                            {});
+
+                    m.objects.countries.geometries.forEach(function(g) {
+                        if (g.id >= 0) {
+                            var ccn3 = ('000' + g.id).substr(-3);
+
+                            var item = byCodes[ccn3];
+
+                            g.properties = g.properties || {};
+
+                            g.properties.ccn3 = ccn3;
+                            g.properties.cca3 = item.cca3;
+                            g.properties.name = item.name.common;
+                        }
+                    });
+
+                    console.log(m);
+                    // document.getElementById('target').innerHTML = JSON.stringify(m, null, 4);
+                    document.getElementById('target').innerHTML = JSON.stringify(m);
+                });
+            }
+    );
+</script>
+</body>
+</html>
